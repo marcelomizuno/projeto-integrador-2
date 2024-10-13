@@ -79,9 +79,12 @@ WSGI_APPLICATION = "controle_de_estoque.wsgi.application"
 
 DATABASES = {
     'default': dj_database_url.config(
-        default=os.getenv('DATABASE_URL')
+        # TODO:
+        default='postgresql://projeto_integrador_2_4wfr_user:70V1GFApg5maiX1Ul9xyWVN1QGnKZWkb@dpg-cs621aij1k6c739vc13g-a.oregon-postgres.render.com/projeto_integrador_2_4wfr',
+        conn_max_age=600
     )
 }
+
 
 
 # Password validation
@@ -106,9 +109,9 @@ AUTH_PASSWORD_VALIDATORS = [
 # Internationalization
 # https://docs.djangoproject.com/en/5.1/topics/i18n/
 
-LANGUAGE_CODE = "en-us"
+LANGUAGE_CODE = 'pt-BR'
 
-TIME_ZONE = "UTC"
+TIME_ZONE = 'America/Sao_Paulo'
 
 USE_I18N = True
 
