@@ -28,7 +28,7 @@ SECRET_KEY = "django-insecure-ovg^jzh+tkxgq6w-(vhtt(z_ek!k84fy6gn2@1x$w@y9gj=&if
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['https://projeto-integrador-2-ff8p.onrender.com']
+ALLOWED_HOSTS = ['projeto-integrador-2-ff8p.onrender.com']
 
 
 # Application definition
