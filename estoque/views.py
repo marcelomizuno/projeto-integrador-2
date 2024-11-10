@@ -1,4 +1,72 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect
+from django.contrib.auth import authenticate, login
+from django.contrib.auth.decorators import login_required
+from django.contrib.auth.forms import AuthenticationForm
+from django.contrib.auth.tokens import default_token_generator
+from django.contrib.auth.models import User
+from django.utils.http import urlsafe_base64_decode
+from django.utils.encoding import force_str
+from django.contrib.auth.forms import SetPasswordForm
+from .models import Produto
 
-def home_view(request):
-    return render(request, 'home.html')
+def login_view(request):
+    if request.user.is_authenticated:
+        return redirect('dashboard')
+    
+    if request.method == 'POST':
+        form = AuthenticationForm(request, data=request.POST)
+        if form.is_valid():
+            username = form.cleaned_data.get('username')
+            password = form.cleaned_data.get('password')
+            user = authenticate(request, username=username, password=password)
+            if user is not None:
+                login(request, user)
+                return redirect('dashboard')
+    else:
+        form = AuthenticationForm()
+    
+    return render(request, 'login.html', {'form': form})
+
+
+def password_reset_confirm(request, uidb64=None, token=None, *arg, **kwargs):
+    try:
+        uid = force_str(urlsafe_base64_decode(uidb64))
+        user = User.objects.get(pk=uid)
+    except (TypeError, ValueError, OverflowError, User.DoesNotExist):
+        user = None
+
+    if user is not None and default_token_generator.check_token(user, token):
+        print('user is not None and default_token_generator.check_token(user, token)')
+        if request.method == 'POST':
+            form = SetPasswordForm(user, request.POST)
+            if form.is_valid():
+                form.save()
+                login(request, user)
+                return redirect('dashboard')
+        else:
+            form = SetPasswordForm(user)
+    else:
+        form = None
+
+    return render(request, 'password/password_reset_confirm.html', {
+        'form': form,
+        'uid': uidb64,
+        'token': token
+    })
+
+
+@login_required
+def dashboard(request):
+    users = User.objects.all()
+    produtos = Produto.objects.all()
+    return render(request, 'dashboard.html', {
+        'users': users,
+        'produtos': produtos,
+        })
+
+def custom_error_view(request, exception=None, status_code=500, message="Erro Interno do Servidor"):
+    context = {
+        'status_code': status_code,
+        'message': message
+    }
+    return render(request, 'error.html', context, status=status_code)

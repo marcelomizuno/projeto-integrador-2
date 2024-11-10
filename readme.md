@@ -13,21 +13,40 @@
 
 #### Gerenciamento de Sessão
 
-- Implementar gerenciamento de sessão
-- Implementar recuperação de senha
+- ~~Implementar gerenciamento de sessão~~
+- ~~Implementar recuperação de senha~~
 
-#### Produtos
+#### Template
+- ~~Passar template para o site~~
 
-- Implementar CRUD de produtos
+#### Páginas
 
-#### Estoque
+##### Dashboard
+- Conteúdo da página
 
-- Implementar entrada e saídas de estoque
+##### Calendário
+- Conteúdo da página
 
-#### Relatórios
+##### Configurações
+- Conteúdo da página
 
-- Implementar geração de relatórios
+##### Estoque
+- Ajustar colunas das tabelas BD
+- Listagem de Produtos
+- Adição de Produtos
+- Edição de Produtos
+- Remoção de Produtos
+- Filtragem de Produtos
+- Exportação de Produtos
 
-#### Logs
+##### Funcionários
+- ~~Listagem de Funcionários~~
+- Adição de Funcionários
+- Edição de Funcionários
+- Remoção de Funcionários
+- Filtragem de Funcionários
+- Exportação de Funcionários
 
-- Implementar registros de log
+##### Sobre
+- Conteúdo da página
+

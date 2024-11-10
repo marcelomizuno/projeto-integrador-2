@@ -1,0 +1,54 @@
+
+<div class="container">
+
+  <h1>Logo</h1>
+  <nav>
+      <ul class="menu">
+          <li class="menu-item">
+              <a class="menu-link" id="dashboard" onclick="editSections('dashboard')">  
+              <i class="bi bi-speedometer"></i>                                
+                  DashBoard
+              </a>
+          </li>
+
+          <li class="menu-item">
+              <a class="menu-link" id="calendar" onclick="editSections('calendar')">  
+                  <i class="bi bi-calendar"></i>                                
+                  Calendário
+              </a>
+          </li>
+
+          <li class="menu-item">
+              <a class="menu-link" id="settings" onclick="editSections('settings')">
+                  <i class="bi bi-gear"></i>
+                  Configurações
+              </a>
+          </li>
+
+          <li class="menu-item">
+              <a class="menu-link" id="storage" onclick="editSections('storage')">
+                  <i class="bi bi-boxes"></i>
+                  Estoque
+              </a>
+          </li>
+
+          <li class="menu-item">
+              <a class="menu-link" id="employees" onclick="editSections('employees')">
+                  <i class="bi bi-person-badge"></i>
+                  Funcionários
+              </a>
+          </li>    
+
+          <li class="menu-item">
+              <a class="menu-link" id="about" onclick="editSections('about')">
+                  <i class="bi bi-info-circle"></i>
+                  Sobre
+              </a>
+          </li>
+      </ul>
+  </nav>
+  <form method="post" action="{% url 'logout' %}">
+    {% csrf_token %}
+    <button class="logoff" type="submit"><i class="bi bi-box-arrow-left"></i>LogOff</button>
+  </form>
+</div>

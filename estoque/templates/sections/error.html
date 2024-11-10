@@ -1,0 +1,12 @@
+{% extends 'base.html' %}
+
+{% block title %}Erro - {% status_code %}{% endblock %}
+
+{% block content %}
+<div class="main-wrapper">
+  <div class="container">
+    <h1>Erro {% status_code %}</h1>
+    <p>{{ message }}</p>
+  </div>
+</div>
+{% endblock %}

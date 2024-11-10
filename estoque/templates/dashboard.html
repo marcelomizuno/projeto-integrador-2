@@ -1,0 +1,40 @@
+{% extends 'base.html' %} 
+{% load static %}
+
+{% block title %}Dashboard{% endblock %}
+
+{% block extra_css %}
+  <link rel="stylesheet" href="{% static 'css/home.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="menu-wrapper">
+  {% include 'sections/sidebar.html' %}
+</div>    
+
+<div class="main">
+
+{% include 'sections/header.html' %}
+
+  <div class="sections">
+
+      {% include 'sections/dashboard.html' %}
+
+      {% include 'sections/calendar.html' %}
+
+      {% include 'sections/settings.html' %}
+
+      {% include 'sections/storage.html' %}
+
+      {% include 'sections/employees.html' %}
+
+      {% include 'sections/about.html' %}
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_js_footer %}
+<script src="{% static 'js/menuItems.js' %}"></script>
+<script src="{% static 'js/editSections.js' %}"></script>
+<script src="{% static 'js/profileMenu.js' %}"></script>
+{% endblock %}

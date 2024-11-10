@@ -1,0 +1,23 @@
+<header>
+
+  <input class="search-bar" type="search" name="" id="search" placeholder="Pesquisar">
+
+  <div class="profile">
+      <div>
+        <h3>{{ request.user.get_full_name }}</h3>
+        <p>{{ request.user.email }}</p>
+      </div>
+      <div class="dropdown">
+          <button id="dropdownButton" class="dropbtn bi bi-three-dots-vertical"></button>
+          <div id="dropdown-content" class="dropdown-content">
+            <a href="#">Configurações</a>
+            <a href="#">Política e Privacidade</a>
+            <a href="#">Termos de Uso</a>
+            <a href="#">Contato</a>
+          </div>
+      </div>      
+      
+  </div>
+
+  
+</header>

@@ -124,7 +124,26 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/5.1/howto/static-files/
 
 STATIC_URL = '/static/'
+STATICFILES_DIRS = [os.path.join(BASE_DIR, 'estoque/assets')]
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+
+# URL de login
+LOGIN_URL = '/'
+
+# Redirecionar após login
+LOGIN_REDIRECT_URL = '/dashboard/'
+
+# Redirecionar após logout
+LOGOUT_REDIRECT_URL = '/'
+
+# EMAIL SETTINGS
+
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_USE_TLS = True
+EMAIL_PORT = 587
+EMAIL_HOST_USER = 'gerenciador.estoque.pi2@gmail.com'
+EMAIL_HOST_PASSWORD = 'kzvmttnzemvklpil'
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field

@@ -1,0 +1,41 @@
+{% extends 'base.html' %} 
+{% load static %}
+
+{% block title %}Login{% endblock %} 
+
+{% block extra_css %}
+  <link rel="stylesheet" href="{% static 'css/index.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="main-wrapper">
+  <div class="container">
+    <h1>LogIn</h1>
+
+    <form method="post" action="{% url 'login' %}" class="login">
+      {% csrf_token %}
+      <label for="username">Usuário</label>
+      <input type="text" id="username" name="username" required value="{{ form.username.value|default_if_none:'' }}" />
+      {{ form.username.errors }}
+
+      <label for="password">Senha</label>
+      <input type="password" id="password" name="password" required />
+      {{ form.password.errors }}
+
+      <div id="error-message">
+        {% if form.errors %}
+          <span>Usuário ou senha incorretos</span>
+        {% endif %}
+      </div>
+
+      <button class="accept" type="submit">Entrar</button>
+    </form>
+
+    <div id="resetPassword"><a href="{% url 'password_reset' %}">Esqueceu sua senha?</a></div>
+
+  </div>
+</div>
+<div class="imagem">
+  <h2></h2>
+</div>
+{% endblock %}
