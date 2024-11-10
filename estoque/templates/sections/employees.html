@@ -11,7 +11,7 @@
           <option value="10">15</option>
       </select>
 
-      <button class="export button-storage">
+      <button class="export button-storage" onclick="exportUsers()">
           Exportar
           <i class="bi bi-file-earmark-arrow-down"></i>
       </button>
@@ -21,7 +21,7 @@
           <i class="bi bi-filter"></i>
       </button>
 
-      <button class="new button-storage">
+      <button class="new button-storage" onclick="updateEmployee()">
           Adicionar Funcionário <i class="bi bi-plus-circle"></i>
       </button>    
   </div>
@@ -31,12 +31,12 @@
       <table class="products">
           <thead>
               <tr>
-                  <th>Código</th>
+                  <th>ID</th>
                   <th>Nome</th>
                   <th>Sobrenome</th>
                   <th>Email</th>
                   <th>Status</th>
-                  <th></th>                            
+                  <th>Editar</th>                            
               </tr>
           </thead>
 
@@ -48,6 +48,7 @@
               <td>{{ user.last_name }}</td>
               <td>{{ user.email }}</td>
               <td>{% if user.is_active %}Ativo{% else %}Inativo{% endif %}</td>
+              <td><button onclick="updateEmployee({{ user.id }})"><i class="bi bi-pencil"></i></button></td>
             </tr>
             {% endfor %}
           </tbody>  
@@ -64,3 +65,184 @@
   
   
 </section>
+
+<style>
+    .employees-modal {
+        display: none;
+        position: fixed;
+        z-index: 9999;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        overflow: auto;
+        justify-content: center;
+        align-items: center;
+        background-color: rgba(0, 0, 0, 0.5);
+    }
+    
+    .employees-modal.show {
+        display: flex;
+    }
+
+    .modal-content {
+        background-color: #343131;
+        padding: 20px;
+        width: 50%;
+    }
+
+    .modal-header {
+        display: flex;
+        justify-content: space-between;
+    }
+
+    .modal-header h2 {
+        margin: 0;
+    }
+
+    .modal-body {
+        margin-top: 20px;
+    }
+
+    .modal-body form {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .close-modal {
+        color: #aaa;
+        font-size: 28px;
+        font-weight: bold;
+    }
+
+    .close-modal:hover,
+    .close-modal:focus {
+        color: black;
+        text-decoration: none;
+        cursor: pointer;
+    }
+
+    .new-user-password {
+        display: none;
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .new-user-password.show {
+        display: flex;
+    }
+
+</style>
+
+<div class="employees-modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h2>Adicionar Funcionário</h2>
+            <span class="close-modal">&times;</span>
+        </div>
+        <div class="modal-body">
+            <form onsubmit="saveUser(event)" id="employee-form" autocomplete="off">
+                {% csrf_token %}
+                <input type="hidden" name="user_id" id="user_id">
+                <label for="first_name">Nome</label>
+                <input type="text" name="first_name" id="first_name" required autocomplete="off">
+                <label for="last_name">Sobrenome</label>
+                <input type="text" name="last_name" id="last_name" required autocomplete="off">
+                <label for="username">Nome de Usuário</label>
+                <input type="text" name="username" id="username" required autocomplete="off">
+                <label for="email">Email</label>
+                <input type="email" name="email" id="email" required autocomplete="off">
+                <div class="new-user-password">
+                    <label for="password">Senha</label>
+                    <input type="password" name="password1" id="password" required autocomplete="off">
+                    <label for="password_confirm">Confirme a Senha</label>
+                    <input type="password" name="password2" id="password_confirm" required autocomplete="off">
+                </div>
+                <button class="accept">Adicionar</button>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+    function updateEmployee(user_id) {
+        const employeesModal = document.querySelector('.employees-modal');
+        const newUserPassword = document.querySelector('.new-user-password');
+
+        if (user_id) {
+            document.querySelector('.modal-header h2').textContent = 'Editar Funcionário';
+            // Fetch user data
+            fetch(`/get_user_data/${user_id}/`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.error) {
+                        alert(data.error);
+                    } else {
+                        document.querySelector('#user_id').value = user_id;
+                        document.querySelector('#first_name').value = data.first_name;
+                        document.querySelector('#last_name').value = data.last_name;
+                        document.querySelector('#username').value = data.username;
+                        document.querySelector('#email').value = data.email;
+                        // Hide password fields when editing
+                        newUserPassword.classList.remove('show');
+                        document.querySelector('#password').removeAttribute('required');
+                        document.querySelector('#password_confirm').removeAttribute('required');
+                    }
+                })
+                .catch(error => console.error('Error fetching user data:', error));
+        } else {
+            document.querySelector('.modal-header h2').textContent = 'Adicionar Funcionário';
+            // Clear form fields
+            document.querySelector('#user_id').value = '';
+            document.querySelector('#first_name').value = '';
+            document.querySelector('#last_name').value = '';
+            document.querySelector('#username').value = '';
+            document.querySelector('#email').value = '';
+            document.querySelector('#password').value = '';
+            document.querySelector('#password_confirm').value = '';
+            // Show password fields when adding
+            newUserPassword.classList.add('show');
+            document.querySelector('#password').setAttribute('required', 'required');
+            document.querySelector('#password_confirm').setAttribute('required', 'required');
+        }
+
+        employeesModal.classList.add('show');
+    }
+
+    document.querySelector('.close-modal').addEventListener('click', function() {
+        document.querySelector('.employees-modal').classList.remove('show');
+    });
+    
+    window.onclick = function(event) {
+        if (event.target == document.querySelector('.employees-modal')) {
+            document.querySelector('.employees-modal').classList.remove('show');
+        }
+    }
+
+    function saveUser(event) {
+        event.preventDefault();
+        const formData = new FormData(document.querySelector('#employee-form'));
+        fetch('/save_user/', {
+            method: 'POST',
+            body: formData,
+            headers: {
+                'X-CSRFToken': formData.get('csrfmiddlewaretoken')
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                window.location.reload();
+            } else {
+                alert('Erro ao salvar usuário: ' + JSON.stringify(data.errors));
+            }
+        })
+        .catch(error => console.error('Error saving user:', error));
+    }
+
+
+    function exportUsers() {
+        window.location.href = '/export_users/';
+    }
+</script>

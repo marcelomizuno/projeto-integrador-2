@@ -1,5 +1,11 @@
 document.addEventListener('DOMContentLoaded', function() {
-    editSections('dashboard'); 
+    if (window.location.hash) {
+        const hash = window.location.hash.substring(1);
+        editSections(hash);
+    }
+    else {
+        editSections('dashboard');
+    }
 });
 
 
@@ -17,5 +23,6 @@ function editSections(section) {
 
     document.getElementById('section-' + section).classList.add('active-section');
     document.getElementById(section).classList.add('active');
-   
+    
+    window.location.hash = section;
 }
