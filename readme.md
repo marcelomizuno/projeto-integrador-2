@@ -41,11 +41,11 @@
 
 ##### Funcionários
 - ~~Listagem de Funcionários~~
-- Adição de Funcionários
-- Edição de Funcionários
+- ~~Adição de Funcionários~~
+- ~~Edição de Funcionários~~
 - Remoção de Funcionários
 - Filtragem de Funcionários
-- Exportação de Funcionários
+- ~~Exportação de Funcionários~~
 
 ##### Sobre
 - Conteúdo da página
