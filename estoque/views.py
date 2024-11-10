@@ -1,6 +1,5 @@
-
 import csv
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth import authenticate, login
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.forms import AuthenticationForm
@@ -12,8 +11,8 @@ from django.utils.http import urlsafe_base64_decode
 from django.utils.encoding import force_str
 from django.http import HttpResponse
 from django.http import JsonResponse
-from .models import Produto
-from .forms import CustomUserCreationForm, CustomUserChangeForm
+from .models import Produto, Categoria
+from .forms import CustomUserCreationForm, CustomUserChangeForm, ProdutoForm
 
 
 def login_view(request):
@@ -66,9 +65,11 @@ def password_reset_confirm(request, uidb64=None, token=None, *arg, **kwargs):
 def dashboard(request):
     users = User.objects.all()
     produtos = Produto.objects.all()
+    categorias = Categoria.objects.all()
     return render(request, 'dashboard.html', {
         'users': users,
         'produtos': produtos,
+        'categorias': categorias,
         })
 
 @login_required
@@ -107,7 +108,17 @@ def save_user(request):
         else:
             return JsonResponse({'success': False, 'errors': form.errors})
     return JsonResponse({'success': False, 'error': 'Método não permitido'}, status=405)
-    
+
+
+@login_required
+def delete_user(request, user_id):
+    try:
+        user = get_object_or_404(User, pk=user_id)
+        user.delete()
+        return JsonResponse({'success': True})
+    except Exception as e:
+        return JsonResponse({'success': False, 'error': str(e)})
+
 
 @login_required
 def export_users(request):
@@ -122,6 +133,60 @@ def export_users(request):
         writer.writerow(user)
 
     return response
+
+
+@login_required
+def save_product(request):
+    if request.method == 'POST':
+        product_id = request.POST.get('product_id')
+        new_category_name = request.POST.get('new_category')
+        
+        if new_category_name:
+            # Criar nova categoria
+            categoria, created = Categoria.objects.get_or_create(nome=new_category_name)
+            request.POST = request.POST.copy()
+            request.POST['categoria'] = categoria.id
+        
+        if product_id:
+            # Atualizar produto existente
+            product = get_object_or_404(Produto, pk=product_id)
+            form = ProdutoForm(request.POST, instance=product)
+        else:
+            # Criar novo produto
+            form = ProdutoForm(request.POST)
+        
+        if form.is_valid():
+            form.save()
+            return JsonResponse({'success': True})
+        else:
+            return JsonResponse({'success': False, 'errors': form.errors})
+    return JsonResponse({'success': False, 'error': 'Método não permitido'}, status=405)
+
+
+@login_required
+def get_product_data(request, product_id):
+    try:
+        product = get_object_or_404(Produto, pk=product_id)
+        product_data = {
+            'name': product.nome,
+            'category': product.categoria.id,
+            'description': product.descricao,
+            'quantity': product.quantidade,
+        }
+        return JsonResponse(product_data)
+    except Produto.DoesNotExist:
+        return JsonResponse({'error': 'Produto não encontrado'}, status=404)
+    
+
+@login_required
+def delete_product(request, product_id):
+    try:
+        product = get_object_or_404(Produto, pk=product_id)
+        product.delete()
+        return JsonResponse({'success': True})
+    except Exception as e:
+        return JsonResponse({'success': False, 'error': str(e)})
+    
 
 def custom_error_view(request, exception=None, status_code=500, message="Erro Interno do Servidor"):
     context = {

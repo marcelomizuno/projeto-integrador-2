@@ -5,9 +5,7 @@ class Produto(models.Model):
     nome = models.CharField(max_length=255)
     categoria = models.ForeignKey('Categoria', on_delete=models.CASCADE)
     descricao = models.TextField()
-    codigo_de_barras = models.CharField(max_length=255)
-    quantidade_minima = models.IntegerField()
-    quantidade_atual = models.IntegerField()
+    quantidade = models.IntegerField()
     is_active = models.BooleanField(default=False)
 
     def __str__(self):

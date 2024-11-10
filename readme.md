@@ -31,11 +31,11 @@
 - Conteúdo da página
 
 ##### Estoque
-- Ajustar colunas das tabelas BD
-- Listagem de Produtos
-- Adição de Produtos
-- Edição de Produtos
-- Remoção de Produtos
+- ~~Ajustar colunas das tabelas BD~~
+- ~~Listagem de Produtos~~
+- ~~Adição de Produtos~~
+- ~~Edição de Produtos~~
+- ~~Remoção de Produtos~~
 - Filtragem de Produtos
 - Exportação de Produtos
 
@@ -43,8 +43,7 @@
 - ~~Listagem de Funcionários~~
 - ~~Adição de Funcionários~~
 - ~~Edição de Funcionários~~
-- Remoção de Funcionários
-- Filtragem de Funcionários
+- ~~Remoção de Funcionários~~
 - ~~Exportação de Funcionários~~
 
 ##### Sobre

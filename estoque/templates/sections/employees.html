@@ -4,21 +4,10 @@
 
   <div class="buttons-container">                     
       
-      <label for="itemsPerPage">Mostrar até</label>
-      <select class="" id="itemsPerPage">
-          <option value="4">5</option>
-          <option value="5">10</option>
-          <option value="10">15</option>
-      </select>
 
       <button class="export button-storage" onclick="exportUsers()">
           Exportar
           <i class="bi bi-file-earmark-arrow-down"></i>
-      </button>
-
-      <button class="filter button-storage">
-          Filtro 
-          <i class="bi bi-filter"></i>
       </button>
 
       <button class="new button-storage" onclick="updateEmployee()">
@@ -48,19 +37,18 @@
               <td>{{ user.last_name }}</td>
               <td>{{ user.email }}</td>
               <td>{% if user.is_active %}Ativo{% else %}Inativo{% endif %}</td>
-              <td><button onclick="updateEmployee({{ user.id }})"><i class="bi bi-pencil"></i></button></td>
+              <td style="display: flex;">
+                <button onclick="updateEmployee({{ user.id }})">
+                    <i class="bi bi-pencil"></i>
+                </button>
+                <button onclick="deleteUser({{ user.id }})">
+                    <i class="bi bi-trash"></i>
+                </button>
+            </td>
             </tr>
             {% endfor %}
           </tbody>  
       </table>
-  </div>
-
-  <div class="table-arrows">
-      <div class="arrow"><a href=""><i class="bi bi-arrow-left-short"></i></a>Anterior</div> 
-
-      <div>1 de 15</div>    
-  
-      <div class="arrow">Seguinte <a href=""><i class="bi bi-arrow-right-short"></i></a></div>
   </div>
   
   
@@ -241,6 +229,25 @@
         .catch(error => console.error('Error saving user:', error));
     }
 
+    function deleteUser(user_id) {
+        if (confirm(`Tem certeza que deseja excluir este funcionário? (user ID ${user_id})`)) {
+            fetch(`/delete_user/${user_id}/`, {
+                method: 'DELETE',
+                headers: {
+                    'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    window.location.reload();
+                } else {
+                    alert('Erro ao excluir usuário: ' + data.error);
+                }
+            })
+            .catch(error => console.error('Error deleting user:', error));
+        }
+    }
 
     function exportUsers() {
         window.location.href = '/export_users/';

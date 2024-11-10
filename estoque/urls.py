@@ -13,6 +13,10 @@ urlpatterns = [
     path('get_user_data/<int:user_id>/', views.get_user_data, name='get_user_data'),
     path('save_user/', views.save_user, name='save_user'),
     path('export_users/', views.export_users, name='export_users'),
+    path('delete_user/<int:user_id>/', views.delete_user, name='delete_user'),
+    path('save_product/', views.save_product, name='save_product'),
+    path('get_product_data/<int:product_id>/', views.get_product_data, name='get_product_data'),
+    path('delete_product/<int:product_id>/', views.delete_product, name='delete_product'),
 ]
 
 
