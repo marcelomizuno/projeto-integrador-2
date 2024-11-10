@@ -1,51 +1,43 @@
-# Projeto Integrador 2
-## Controle de Estoque
+# Projeto Integrador 2 - Controle de Estoque
 
-### TODO's
+Página do Projeto: https://projeto-integrador-2-ff8p.onrender.com/
 
-#### Inicialização do Projeto
+Username: admin
+Senha: univesp123
 
-- ~~Criar projeto~~
-- ~~Conectar banco de dados~~
-- ~~Criar Superuser~~
-- ~~Criar tabelas iniciais~~
-- ~~Criar Home provisória~~
+## Requerimentos
 
-#### Gerenciamento de Sessão
+- ~~Desenvolver um software com framework web que utilize banco de dados~~
+- ~~Inclua script web (Javascript)~~
+- ~~Nuvem~~
+- Uso de API
+- Acessibilidade 
+- ~~Controle de versão~~
+- Testes
 
-- ~~Implementar gerenciamento de sessão~~
-- ~~Implementar recuperação de senha~~
+Opcionalmente: 
+- Incluir análises de dados
 
-#### Template
-- ~~Passar template para o site~~
 
-#### Páginas
+## TODO's
 
-##### Dashboard
+- Implementar entradas e saidas de estoque
+- Implementar Busca de produtos (API)
+- Implementar visualização de dados
+
+### Dashboard
 - Conteúdo da página
 
-##### Calendário
+### Calendário
 - Conteúdo da página
 
-##### Configurações
+### Configurações
 - Conteúdo da página
 
-##### Estoque
-- ~~Ajustar colunas das tabelas BD~~
-- ~~Listagem de Produtos~~
-- ~~Adição de Produtos~~
-- ~~Edição de Produtos~~
-- ~~Remoção de Produtos~~
+### Estoque
 - Filtragem de Produtos
 - Exportação de Produtos
 
-##### Funcionários
-- ~~Listagem de Funcionários~~
-- ~~Adição de Funcionários~~
-- ~~Edição de Funcionários~~
-- ~~Remoção de Funcionários~~
-- ~~Exportação de Funcionários~~
-
-##### Sobre
+### Sobre
 - Conteúdo da página
 
