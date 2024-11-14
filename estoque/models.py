@@ -16,11 +16,11 @@ class Produto(models.Model):
         verbose_name_plural = 'Produtos'
     
     def incrementar(self, quantidade):
-        self.quantidade_atual += quantidade
+        self.quantidade += quantidade
         self.save()
 
     def decrementar(self, quantidade):
-        self.quantidade_atual -= quantidade
+        self.quantidade -= quantidade
         self.save()
 
 class Movimentacao(models.Model):
