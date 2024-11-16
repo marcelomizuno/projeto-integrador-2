@@ -21,7 +21,7 @@ urlpatterns = [
 
 
 # Configurações de templates de erro
-handler404 = 'app_name.views.custom_404'
-handler500 = 'app_name.views.custom_500'
-handler403 = 'app_name.views.custom_403'
-handler400 = 'app_name.views.custom_400'
+handler400 = 'estoque.views.custom_error_view'
+handler403 = 'estoque.views.custom_error_view'
+handler404 = 'estoque.views.custom_error_view'
+handler500 = 'estoque.views.custom_error_view'

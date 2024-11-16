@@ -81,8 +81,7 @@ WSGI_APPLICATION = "controle_de_estoque.wsgi.application"
 
 DATABASES = {
     'default': dj_database_url.config(
-        # TODO:
-        default='postgresql://projeto_integrador_2_4wfr_user:70V1GFApg5maiX1Ul9xyWVN1QGnKZWkb@dpg-cs621aij1k6c739vc13g-a.oregon-postgres.render.com/projeto_integrador_2_4wfr',
+        default='postgresql://pi2_database_user:455KDPrfTHvjhGsl6SfcRKzBq1hDdRHa@dpg-css8ub3tq21c739tkhp0-a.oregon-postgres.render.com/pi2_database',
         conn_max_age=600
     )
 }

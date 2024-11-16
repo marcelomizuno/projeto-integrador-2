@@ -8,6 +8,7 @@
 {% endblock %}
 
 {% block content %}
+<div class="fade hide"></div>
 <div class="menu-wrapper">
   {% include 'sections/sidebar.html' %}
 </div>    
@@ -36,5 +37,7 @@
 {% block extra_js_footer %}
 <script src="{% static 'js/menuItems.js' %}"></script>
 <script src="{% static 'js/editSections.js' %}"></script>
+<script src="{% static 'js/modal.js' %}"></script>
 <script src="{% static 'js/profileMenu.js' %}"></script>
+<script src="{% static 'js/white-dark-mode.js' %}"></script>
 {% endblock %}

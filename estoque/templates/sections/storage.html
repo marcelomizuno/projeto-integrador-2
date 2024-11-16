@@ -1,270 +1,259 @@
-<section class="section storage" id="section-storage">            
+<section class="section storage" id="section-storage">
   <h2 class="section-title">Estoque</h2>
-  
-  <div class="buttons-container">                     
-      <label for="itemsPerPage">Mostrar até</label>
-      <select class="" id="itemsPerPage">
-          <option value="4">5</option>
-          <option value="5">10</option>
-          <option value="10">15</option>
-      </select>
 
-      <button class="export button-storage">
-          Exportar
-          <i class="bi bi-file-earmark-arrow-down"></i>
-      </button>
+  <div class="buttons-container">
+    <label for="itemsPerPage">Mostrar até</label>
+    <select class="" id="itemsPerPage">
+      <option value="4">5</option>
+      <option value="5">10</option>
+      <option value="10">15</option>
+    </select>
 
-      <button class="filter button-storage">
-          Filtro 
-          <i class="bi bi-filter"></i>
-      </button>
+    <button class="export button-storage">
+      Exportar
+      <i class="bi bi-file-earmark-arrow-down"></i>
+    </button>
 
-      <button onclick="updateProduct()" class="new button-storage">
-          Novo produto <i class="bi bi-plus-circle"></i>
-      </button>    
+    <button class="filter button-storage">
+      Filtro
+      <i class="bi bi-filter"></i>
+    </button>
+
+    <button onclick="updateProduct()" class="new button-storage">
+      Novo produto <i class="bi bi-plus-circle"></i>
+    </button>
   </div>
-  
+
   <div class="table-container">
-      <!-- Tabela de produtos -->
-      <table>
-          <thead>
-              <tr>
-                  <th>ID</th>
-                  <th>Nome</th>
-                  <th>Categoria</th>
-                  <th>Quantidade</th>
-                  <th>Ações</th>
-              </tr>
-          </thead>
-          <tbody>
-              {% for produto in produtos %}
-              <tr>
-                  <td>{{ produto.id }}</td>
-                  <td>{{ produto.nome }}</td>
-                  <td>{{ produto.categoria }}</td>
-                  <td>{{ produto.quantidade }}</td>
-                  <td style="display: flex;">
-                    <button onclick="updateProduct({{ produto.id }})">
-                        <i class="bi bi-pencil"></i>
-                    </button>
-                    <button onclick="deleteProduct({{ produto.id }})">
-                        <i class="bi bi-trash"></i>
-                    </button>
-                </td>
-              </tr>
-              {% endfor %}
-          </tbody>
-      </table>
+    <!-- Tabela de produtos -->
+    <table>
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Nome</th>
+          <th>Categoria</th>
+          <th>Quantidade</th>
+          <th>Ações</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for produto in produtos %}
+        <tr>
+          <td>{{ produto.id }}</td>
+          <td>{{ produto.nome }}</td>
+          <td>{{ produto.categoria }}</td>
+          <td>{{ produto.quantidade }}</td>
+          <td class="storage-icons">
+            <button
+              onclick="updateProduct({{ produto.id }})"
+              title="Editar"
+              class="open-modal bi bi-pencil edit"
+            ></button>
+            <button
+              onclick="deleteProduct({{ produto.id }})"
+              title="Excluir"
+              class="open-modal bi bi-trash exclude"
+            ></button>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
   </div>
 
   <div class="table-arrows">
-      <div class="arrow"><a href=""><i class="bi bi-arrow-left-short"></i></a>Anterior</div> 
-      <div>1 de 15</div>    
-      <div class="arrow">Seguinte <a href=""><i class="bi bi-arrow-right-short"></i></a></div>
+    <div class="arrow">
+      <a href=""><i class="bi bi-arrow-left-short"></i></a>Anterior
+    </div>
+    <div>1 de 15</div>
+    <div class="arrow">
+      Seguinte <a href=""><i class="bi bi-arrow-right-short"></i></a>
+    </div>
   </div>
 </section>
 
-<!-- Modal para criação/edição de produtos -->
-<div class="products-modal">
-    <div class="modal-content">
-        <div class="modal-header">
-            <h2>Adicionar Produto</h2>
-            <span class="close-modal">&times;</span>
-        </div>
-        <div class="modal-body">
-            <form id="product-form" onsubmit="saveProduct(event)" autocomplete="off">
-                {% csrf_token %}
-                <input type="hidden" name="product_id" id="product_id">
-                <label for="nome">Nome</label>
-                <input type="text" name="nome" id="name" required autocomplete="off">
 
-                <label for="categoria">Categoria</label>
-                <select name="categoria" id="category" required onchange="toggleNewCategoryInput()">
-                    <option value="">Selecione uma categoria</option>
-                    {% for categoria in categorias %}
-                    <option value="{{ categoria.id }}">{{ categoria.nome }}</option>
-                    {% endfor %}
-                    <option value="new">Nova Categoria</option>
-                </select>
-                <input type="text" name="new_category" id="new_category" placeholder="Nome da nova categoria" style="display: none;" autocomplete="off">
-                
-                <label for="descricao">Descrição</label>
-                <input type="text" name="descricao" id="description" required autocomplete="off">
-                
-                <label for="quantidade">Quantidade</label>
-                <input type="number" name="quantidade" id="quantity" required autocomplete="off">
-                
-                <button class="accept" type="submit">Salvar</button>
-            </form>
+<!-- Modal para criação/edição de produtos -->
+<div class="products-modal modal hide">
+  <div class="modal-header">
+    <h2>Editar produto</h2>
+    <button class="close-modal">X</button>
+  </div>
+  <div class="modal-body">
+    <form id="product-form" onsubmit="saveProduct(event)" autocomplete="off">
+      {% csrf_token %}
+      <input type="hidden" name="product_id" id="product_id" />
+      <label for="nome">Nome</label>
+      <input type="text" name="nome" id="name" required autocomplete="off" />
+
+      <div class="container-input">
+        <div class="input-and-label">
+          <label for="categoria">Categoria</label>
+          <select
+            name="categoria"
+            id="category"
+            required
+            onchange="toggleNewCategoryInput()"
+          >
+            <option value="">Selecione uma categoria</option>
+            {% for categoria in categorias %}
+            <option value="{{ categoria.id }}">{{ categoria.nome }}</option>
+            {% endfor %}
+            <option value="new">Nova Categoria</option>
+          </select>
+          <input
+            type="text"
+            name="new_category"
+            id="new_category"
+            placeholder="Nome da nova categoria"
+            style="display: none"
+            autocomplete="off"
+          />
         </div>
-    </div>
+
+        <div class="input-and-label">
+          <label for="quantidade">Quantidade</label>
+          <input
+            type="number"
+            name="quantidade"
+            id="quantity"
+            required
+            autocomplete="off"
+          />
+        </div>
+      </div>
+
+      <label for="descricao">Descrição</label>
+      <textarea name="descricao" id="description" required autocomplete="off"></textarea>
+      <button class="accept" type="submit">Salvar</button>
+    </form>
+  </div>
 </div>
 
+
+<!--Modal excluir-->
+<div class="product-delete modal hide">
+  <div class="modal-header">
+      <h2>Excluir Produto</h2>
+      <button title="Fechar" class="close-modal">X</button>
+  </div>
+  <div class="modal-body">
+
+      <h3>Confirmar exclusão de produto? Esta ação não pode ser desfeita.</h3>
+      <p class="product-delete__product_name"></p>
+      <div class="buttons-container">
+        <button class="accept">Confirmar</button>                                                   
+    </div>
+  </div>
+</div>
+
+
 <script>
-    function updateProduct(product_id) {
-        const productsModal = document.querySelector('.products-modal');
-        const modalHeader = document.querySelector('.modal-header h2');
+  function updateProduct(product_id) {
+    const productsModal = document.querySelector(".products-modal");
+    const modalHeader = document.querySelector(".modal-header h2");
 
-        if (product_id) {
-            modalHeader.textContent = 'Editar Produto';
-            // Fetch product data
-            fetch(`/get_product_data/${product_id}/`)
-                .then(response => response.json())
-                .then(data => {
-                    if (data.error) {
-                        alert(data.error);
-                    } else {
-                        document.querySelector('#product_id').value = product_id;
-                        document.querySelector('#name').value = data.name;
-                        document.querySelector('#category').value = data.category_id;
-                        document.querySelector('#description').value = data.description;
-                        document.querySelector('#quantity').value = data.quantity;
-                        document.querySelector('#new_category').style.display = 'none';
-                    }
-                })
-                .catch(error => console.error('Error fetching product data:', error));
-        } else {
-            modalHeader.textContent = 'Adicionar Produto';
-            // Clear form fields
-            document.querySelector('#product_id').value = '';
-            document.querySelector('#name').value = '';
-            document.querySelector('#category').value = '';
-            document.querySelector('#description').value = '';
-            document.querySelector('#quantity').value = '';
-            document.querySelector('#new_category').style.display = 'none';
-        }
-
-        productsModal.classList.add('show');
+    if (product_id) {
+      modalHeader.textContent = "Editar Produto";
+      // Fetch product data
+      fetch(`/get_product_data/${product_id}/`)
+        .then((response) => response.json())
+        .then((data) => {
+          if (data.error) {
+            alert(data.error);
+          } else {
+            document.querySelector("#product_id").value = product_id;
+            document.querySelector("#name").value = data.name;
+            document.querySelectorAll("#category option").forEach((option) => {
+              if (option.value == data.category) {
+                option.selected = true;
+              }
+            });
+            document.querySelector("#description").value = data.description;
+            document.querySelector("#quantity").value = data.quantity;
+            document.querySelector("#new_category").style.display = "none";
+          }
+        })
+        .catch((error) => console.error("Error fetching product data:", error));
+    } else {
+      modalHeader.textContent = "Adicionar Produto";
+      // Clear form fields
+      document.querySelector("#product_id").value = "";
+      document.querySelector("#name").value = "";
+      document.querySelector("#category").value = "";
+      document.querySelector("#description").value = "";
+      document.querySelector("#quantity").value = "";
+      document.querySelector("#new_category").style.display = "none";
     }
 
-    function toggleNewCategoryInput() {
-        const categorySelect = document.querySelector('#category');
-        const newCategoryInput = document.querySelector('#new_category');
-        if (categorySelect.value === 'new') {
-            newCategoryInput.style.display = 'block';
-            newCategoryInput.required = true;
-        } else {
-            newCategoryInput.style.display = 'none';
-            newCategoryInput.required = false;
-        }
-    }
+    toggleModal(productsModal);
+  }
 
-    document.querySelectorAll('.close-modal').forEach(element => {
-        element.addEventListener('click', function() {
-            document.querySelector('.products-modal').classList.remove('show');
-        });
+  function toggleNewCategoryInput() {
+    const categorySelect = document.querySelector("#category");
+    const newCategoryInput = document.querySelector("#new_category");
+    if (categorySelect.value === "new") {
+      newCategoryInput.style.display = "block";
+      newCategoryInput.required = true;
+    } else {
+      newCategoryInput.style.display = "none";
+      newCategoryInput.required = false;
+    }
+  }
+
+  function saveProduct(event) {
+    event.preventDefault();
+    const formData = new FormData(document.querySelector("#product-form"));
+    fetch("/save_product/", {
+      method: "POST",
+      body: formData,
+      headers: {
+        "X-CSRFToken": formData.get("csrfmiddlewaretoken"),
+      },
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        if (data.success) {
+          window.location.reload();
+        } else {
+          alert("Erro ao salvar produto: " + JSON.stringify(data.errors));
+        }
+      })
+      .catch((error) => console.error("Error saving product:", error));
+  }
+
+  function deleteProduct(product_id) {
+    const productDeleteModal = document.querySelector(".product-delete");
+
+    // Fetch product data to get the name
+    fetch(`/get_product_data/${product_id}/`)
+      .then((response) => response.json())
+      .then((data) => {
+      if (data.error) {
+        alert(data.error);
+      } else {
+        document.querySelector(".product-delete__product_name").textContent = data.name;
+        toggleModal(productDeleteModal);
+      }
+      })
+      .catch((error) => console.error("Error fetching product data:", error));
+
+    document.querySelector(".product-delete .accept").addEventListener("click", function() {
+      fetch(`/delete_product/${product_id}/`, {
+        method: "DELETE",
+        headers: {
+          "X-CSRFToken": document.querySelector("[name=csrfmiddlewaretoken]").value,
+        },
+      })
+        .then((response) => response.json())
+        .then((data) => {
+          if (data.success) {
+            window.location.reload();
+          } else {
+            alert("Erro ao excluir produto: " + data.error);
+          }
+        })
+        .catch((error) => console.error("Error deleting product:", error));
     });
-    
-    window.onclick = function(event) {
-        if (event.target == document.querySelector('.products-modal')) {
-            document.querySelector('.products-modal').classList.remove('show');
-        }
-    }
-
-    function saveProduct(event) {
-        event.preventDefault();
-        const formData = new FormData(document.querySelector('#product-form'));
-        fetch('/save_product/', {
-            method: 'POST',
-            body: formData,
-            headers: {
-                'X-CSRFToken': formData.get('csrfmiddlewaretoken')
-            }
-        })
-        .then(response => response.json())
-        .then(data => {
-            if (data.success) {
-                window.location.reload();
-            } else {
-                alert('Erro ao salvar produto: ' + JSON.stringify(data.errors));
-            }
-        })
-        .catch(error => console.error('Error saving product:', error));
-    }
-
-    function deleteProduct(product_id) {
-        if (confirm('Tem certeza que deseja excluir este produto?')) {
-            fetch(`/delete_product/${product_id}/`, {
-                method: 'DELETE',
-                headers: {
-                    'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
-                }
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    window.location.reload();
-                } else {
-                    alert('Erro ao excluir produto: ' + data.error);
-                }
-            })
-            .catch(error => console.error('Error deleting product:', error));
-        }
-    }
+  }
 </script>
-
-<style>
-    .products-modal {
-        display: none;
-        position: fixed;
-        z-index: 9999;
-        left: 0;
-        top: 0;
-        width: 100%;
-        height: 100%;
-        overflow: auto;
-        justify-content: center;
-        align-items: center;
-        background-color: rgba(0, 0, 0, 0.5);
-    }
-
-    .products-modal.show {
-        display: flex;
-    }
-
-    .modal-content {
-        background-color: #343131;
-        padding: 20px;
-        width: 50%;
-    }
-
-    .modal-header {
-        display: flex;
-        justify-content: space-between;
-    }
-
-    .modal-header h2 {
-        margin: 0;
-    }
-
-    .modal-body {
-        margin-top: 20px;
-    }
-
-    .modal-body form {
-        display: flex;
-        flex-direction: column;
-        gap: 10px;
-    }
-
-    .close-modal {
-        color: #aaa;
-        font-size: 28px;
-        font-weight: bold;
-    }
-
-    .close-modal:hover,
-    .close-modal:focus {
-        color: black;
-        text-decoration: none;
-        cursor: pointer;
-    }
-
-    select {
-        border-radius: 6px;
-        padding: 8px;
-        border: 1px solid var(--background-color);
-        box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.3);
-        background: #272829;
-    }
-</style>

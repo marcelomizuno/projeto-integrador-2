@@ -2,8 +2,7 @@
 
 Página do Projeto: https://projeto-integrador-2-ff8p.onrender.com/
 
-Username: admin
-Senha: univesp123
+Username: admin / Senha: univesp123
 
 ## Requerimentos
 
