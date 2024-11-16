@@ -550,3 +550,11 @@ p{
     background-color: #3c3f3c;
 }
 
+.new-user-password.hide {
+    display: none !important;
+}
+
+.storage_qty {
+    display: flex;
+    align-items: center;
+}

@@ -2,21 +2,10 @@
   <h2 class="section-title">Estoque</h2>
 
   <div class="buttons-container">
-    <label for="itemsPerPage">Mostrar até</label>
-    <select class="" id="itemsPerPage">
-      <option value="4">5</option>
-      <option value="5">10</option>
-      <option value="10">15</option>
-    </select>
 
-    <button class="export button-storage">
+  <button class="export button-storage" onclick="exportProducts()">
       Exportar
       <i class="bi bi-file-earmark-arrow-down"></i>
-    </button>
-
-    <button class="filter button-storage">
-      Filtro
-      <i class="bi bi-filter"></i>
     </button>
 
     <button onclick="updateProduct()" class="new button-storage">
@@ -38,22 +27,38 @@
       </thead>
       <tbody>
         {% for produto in produtos %}
-        <tr>
+        <tr data-product="{{ produto.nome }}">
           <td>{{ produto.id }}</td>
           <td>{{ produto.nome }}</td>
           <td>{{ produto.categoria }}</td>
-          <td>{{ produto.quantidade }}</td>
-          <td class="storage-icons">
-            <button
-              onclick="updateProduct({{ produto.id }})"
-              title="Editar"
-              class="open-modal bi bi-pencil edit"
-            ></button>
-            <button
-              onclick="deleteProduct({{ produto.id }})"
-              title="Excluir"
-              class="open-modal bi bi-trash exclude"
-            ></button>
+          <td>
+            <div class="storage_qty">
+              <button
+                onclick="updateQtyModal({{ produto.id }}, 'decrease')"
+                title="Decrease quantity"
+                class="bi bi-dash-circle-fill decrease"
+              ></button>
+              {{ produto.quantidade }}
+              <button
+                onclick="updateQtyModal({{ produto.id }}, 'increase')"
+                title="Increase quantity"
+                class="bi bi-plus-circle-fill increase"
+              ></button>
+            </div>
+          </td>
+          <td>
+            <div class="storage-icons">
+              <button
+                onclick="updateProduct({{ produto.id }})"
+                title="Editar"
+                class="open-modal bi bi-pencil edit"
+              ></button>
+              <button
+                onclick="deleteProduct({{ produto.id }})"
+                title="Excluir"
+                class="open-modal bi bi-trash exclude"
+              ></button>
+            </div>
           </td>
         </tr>
         {% endfor %}
@@ -61,15 +66,6 @@
     </table>
   </div>
 
-  <div class="table-arrows">
-    <div class="arrow">
-      <a href=""><i class="bi bi-arrow-left-short"></i></a>Anterior
-    </div>
-    <div>1 de 15</div>
-    <div class="arrow">
-      Seguinte <a href=""><i class="bi bi-arrow-right-short"></i></a>
-    </div>
-  </div>
 </section>
 
 
@@ -147,11 +143,30 @@
   </div>
 </div>
 
+<!-- Modal de atualizar Quantidade-->
+<div class="update-quantity modal hide">
+  <div class="modal-header">
+    <h2>Atualizar Quantidade</h2>
+    <button class="close-modal">X</button>
+  </div>
+  <div class="modal-body">
+    <h3><span id="modal_product_name">Nome do Produto</span></h3>
+    <p>Quantidade atual: <span id="modal_product_qty">0</span></p>
+    <form id="quantity-form" onsubmit="updateQty(event)">
+      {% csrf_token %}
+      <input type="hidden" name="product_id" id="product_id" />
+      <input type="hidden" name="action" id="action" />
+      <label for="quantity">Quantidade</label>
+      <input type="number" name="quantity" id="quantity" required />
+      <button class="accept" type="submit">Salvar</button>
+    </form>
+  </div>
+</div>
 
 <script>
   function updateProduct(product_id) {
     const productsModal = document.querySelector(".products-modal");
-    const modalHeader = document.querySelector(".modal-header h2");
+    const modalHeader = productsModal.querySelector(".modal-header h2");
 
     if (product_id) {
       modalHeader.textContent = "Editar Produto";
@@ -255,5 +270,56 @@
         })
         .catch((error) => console.error("Error deleting product:", error));
     });
+  }
+
+  
+  function updateQtyModal(product_id, action) {
+    const updateQtyModal = document.querySelector(".update-quantity");
+    updateQtyModal.querySelector("#product_id").value = product_id;
+    updateQtyModal.querySelector("#action").value = action;
+    if (action === "increase") {
+      updateQtyModal.querySelector("h2").textContent = "Entrada em Estoque";
+    } else {
+      updateQtyModal.querySelector("h2").textContent = "Saída de Estoque";
+    }
+
+    // Fetch product data
+    fetch(`/get_product_data/${product_id}/`)
+      .then((response) => response.json())
+      .then((data) => {
+        if (data.error) {
+          alert(data.error);
+        } else {
+          updateQtyModal.querySelector("#modal_product_name").textContent = data.name;
+          updateQtyModal.querySelector("#modal_product_qty").textContent = data.quantity;
+        }
+      })
+      .catch((error) => console.error("Error fetching product data:", error));
+    toggleModal(updateQtyModal);
+  }
+
+  function updateQty(event) {
+    event.preventDefault();
+    const formData = new FormData(document.querySelector("#quantity-form"));
+    fetch("/update_quantity/", {
+      method: "POST",
+      body: formData,
+      headers: {
+        "X-CSRFToken": formData.get("csrfmiddlewaretoken"),
+      },
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        if (data.success) {
+          window.location.reload();
+        } else {
+          alert("Erro ao atualizar quantidade: " + data.error);
+        }
+      })
+      .catch((error) => console.error("Error updating quantity:", error));
+  }
+
+  function exportProducts() {
+    window.location.href = '/export_products/';
   }
 </script>

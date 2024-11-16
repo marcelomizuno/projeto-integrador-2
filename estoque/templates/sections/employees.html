@@ -37,14 +37,10 @@
               <td>{{ user.last_name }}</td>
               <td>{{ user.email }}</td>
               <td>{% if user.is_active %}Ativo{% else %}Inativo{% endif %}</td>
-              <td style="display: flex;">
-                <button onclick="updateEmployee({{ user.id }})">
-                    <i class="bi bi-pencil"></i>
-                </button>
-                <button onclick="deleteUser({{ user.id }})">
-                    <i class="bi bi-trash"></i>
-                </button>
-            </td>
+              <td class="storage-icons">
+                <button onclick="updateEmployee({{ user.id }})" title="Editar" class="open-modal bi bi-pencil edit"></button>
+                <button onclick="deleteUser({{ user.id }})" title="Excluir" class="open-modal bi bi-trash exclude"></button>
+              </td>
             </tr>
             {% endfor %}
           </tbody>  
@@ -56,34 +52,67 @@
 
 
 <div class="employees-modal modal hide">
-    <div class="modal-content">
-        <div class="modal-header">
-            <h2>Adicionar Funcionário</h2>
-            <span class="close-modal">&times;</span>
-        </div>
-        <div class="modal-body">
-            <form onsubmit="saveUser(event)" id="employee-form" autocomplete="off">
-                {% csrf_token %}
-                <input type="hidden" name="user_id" id="user_id">
-                <label for="first_name">Nome</label>
-                <input type="text" name="first_name" id="first_name" required autocomplete="off">
-                <label for="last_name">Sobrenome</label>
-                <input type="text" name="last_name" id="last_name" required autocomplete="off">
-                <label for="username">Nome de Usuário</label>
-                <input type="text" name="username" id="username" required autocomplete="off">
-                <label for="email">Email</label>
-                <input type="email" name="email" id="email" required autocomplete="off">
-                <div class="new-user-password">
+    <div class="modal-header">
+        <h2>Cadastrar Funcionário</h2>
+        <button class="close-modal">X</button>
+    </div>
+    <div class="modal-body">
+        <form onsubmit="saveUser(event)" id="employee-form" autocomplete="off">
+            {% csrf_token %}
+            <input type="hidden" name="user_id" id="user_id">
+            <div class="container-input">
+                <div class="input-and-label">
+                    <label for="first_name">Nome</label>
+                    <input type="text" name="first_name" id="first_name" required autocomplete="off">                  
+                </div>
+                
+                <div class="input-and-label">
+                    <label for="last_name">Sobrenome</label>
+                    <input type="text" name="last_name" id="last_name" required autocomplete="off">
+                </div>
+            </div>
+            <div class="container-input">
+                <div class="input-and-label">
+                    <label for="username">Nome de Usuário</label>
+                    <input type="text" name="username" id="username" required autocomplete="off">
+                </div>
+                <div class="input-and-label">
+                    <label for="email">Email</label>
+                    <input type="email" name="email" id="email" required autocomplete="off">
+                </div>
+            </div>
+            <div class="new-user-password hide container-input">
+                <div class="input-and-label">
                     <label for="password">Senha</label>
                     <input type="password" name="password1" id="password" required autocomplete="off">
+                </div>
+                <div class="input-and-label">
                     <label for="password_confirm">Confirme a Senha</label>
                     <input type="password" name="password2" id="password_confirm" required autocomplete="off">
                 </div>
-                <button class="accept">Adicionar</button>
-            </form>
+            </div>
+            <button class="accept">Adicionar</button>
+        </form>
+    </div>
+</div>
+
+
+<!--Modal excluir-->
+<div class="employee-delete modal hide">
+    <div class="modal-header">
+        <h2>Excluir Funcionário</h2>
+        <button title="Fechar" class="close-modal">X</button>
+    </div>
+    <div class="modal-body">
+  
+        <h3>Confirmar exclusão de Funcionário? Esta ação não pode ser desfeita.</h3>
+        <p class="employee-delete__employee_name"></p>
+        <div class="buttons-container">
+            <button class="accept">Confirmar</button>                                                   
         </div>
     </div>
 </div>
+
 
 <script>
     function updateEmployee(user_id) {
@@ -91,7 +120,7 @@
         const newUserPassword = document.querySelector('.new-user-password');
 
         if (user_id) {
-            document.querySelector('.modal-header h2').textContent = 'Editar Funcionário';
+            employeesModal.querySelector('.modal-header h2').textContent = 'Editar Funcionário';
             // Fetch user data
             fetch(`/get_user_data/${user_id}/`)
                 .then(response => response.json())
@@ -105,14 +134,14 @@
                         document.querySelector('#username').value = data.username;
                         document.querySelector('#email').value = data.email;
                         // Hide password fields when editing
-                        newUserPassword.classList.remove('show');
+                        newUserPassword.classList.add('hide');
                         document.querySelector('#password').removeAttribute('required');
                         document.querySelector('#password_confirm').removeAttribute('required');
                     }
                 })
                 .catch(error => console.error('Error fetching user data:', error));
         } else {
-            document.querySelector('.modal-header h2').textContent = 'Adicionar Funcionário';
+            employeesModal.querySelector('.modal-header h2').textContent = 'Adicionar Funcionário';
             // Clear form fields
             document.querySelector('#user_id').value = '';
             document.querySelector('#first_name').value = '';
@@ -122,23 +151,13 @@
             document.querySelector('#password').value = '';
             document.querySelector('#password_confirm').value = '';
             // Show password fields when adding
-            newUserPassword.classList.add('show');
+            newUserPassword.classList.remove('hide');
             document.querySelector('#password').setAttribute('required', 'required');
             document.querySelector('#password_confirm').setAttribute('required', 'required');
         }
-
-        employeesModal.classList.add('show');
+        toggleModal(employeesModal);
     }
 
-    document.querySelector('.close-modal').addEventListener('click', function() {
-        document.querySelector('.employees-modal').classList.remove('show');
-    });
-    
-    window.onclick = function(event) {
-        if (event.target == document.querySelector('.employees-modal')) {
-            document.querySelector('.employees-modal').classList.remove('show');
-        }
-    }
 
     function saveUser(event) {
         event.preventDefault();
@@ -161,24 +180,33 @@
         .catch(error => console.error('Error saving user:', error));
     }
 
+
     function deleteUser(user_id) {
-        if (confirm(`Tem certeza que deseja excluir este funcionário? (user ID ${user_id})`)) {
-            fetch(`/delete_user/${user_id}/`, {
-                method: 'DELETE',
-                headers: {
-                    'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
-                }
-            })
+        const deleteEmployeeModal = document.querySelector('.employee-delete');
+        // Fetch user data to get the name
+        fetch(`/get_user_data/${user_id}/`)
             .then(response => response.json())
             .then(data => {
-                if (data.success) {
-                    window.location.reload();
+                if (data.error) {
+                    alert(data.error);
                 } else {
-                    alert('Erro ao excluir usuário: ' + data.error);
+                    deleteEmployeeModal.querySelector('.employee-delete__employee_name').textContent = `Funcionário: ${data.first_name} ${data.last_name}`;
+                    deleteEmployeeModal.querySelector('.accept').onclick = () => {
+                        fetch(`/delete_user/${user_id}/`)
+                            .then(response => response.json())
+                            .then(data => {
+                                if (data.success) {
+                                    window.location.reload();
+                                } else {
+                                    alert('Erro ao excluir usuário: ' + JSON.stringify(data.errors));
+                                }
+                            })
+                            .catch(error => console.error('Error deleting user:', error));
+                    };
+                    toggleModal(deleteEmployeeModal);
                 }
             })
-            .catch(error => console.error('Error deleting user:', error));
-        }
+            .catch(error => console.error('Error fetching user data:', error));
     }
 
     function exportUsers() {

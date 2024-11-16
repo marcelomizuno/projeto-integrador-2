@@ -12,7 +12,7 @@ Username: admin / Senha: univesp123
 - Uso de API
 - Acessibilidade 
 - ~~Controle de versão~~
-- Testes
+- ~~Testes~~
 
 Opcionalmente: 
 - Incluir análises de dados
@@ -20,7 +20,6 @@ Opcionalmente:
 
 ## TODO's
 
-- Implementar entradas e saidas de estoque
 - Implementar Busca de produtos (API)
 - Implementar visualização de dados
 
@@ -30,12 +29,8 @@ Opcionalmente:
 ### Calendário
 - Conteúdo da página
 
-### Configurações
-- Conteúdo da página
-
 ### Estoque
 - Filtragem de Produtos
-- Exportação de Produtos
 
 ### Sobre
 - Conteúdo da página

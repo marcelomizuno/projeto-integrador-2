@@ -138,6 +138,7 @@ button{
 .logoff{
     
     background-color: var(--button-logooff);
+    width: 100%;
 
     & i{
         padding: 6px;
@@ -302,7 +303,9 @@ li{
         background-color: #FBFBFB;
     }
 
-    & input{
+    & textarea, 
+      select,
+      input{
         background-color: #E4E0E1;
         color: #151515;
         border: 1px solid #a1a1a1;

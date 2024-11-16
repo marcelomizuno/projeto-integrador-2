@@ -11,8 +11,10 @@ from django.utils.http import urlsafe_base64_decode
 from django.utils.encoding import force_str
 from django.http import HttpResponse
 from django.http import JsonResponse
-from .models import Produto, Categoria
+from .models import Produto, Categoria, Log
 from .forms import CustomUserCreationForm, CustomUserChangeForm, ProdutoForm
+from .utils import registrar_log
+from django.db.models import Sum
 
 
 def login_view(request):
@@ -66,11 +68,17 @@ def dashboard(request):
     users = User.objects.all()
     produtos = Produto.objects.all()
     categorias = Categoria.objects.all()
+    logs = Log.objects.all().order_by('-data')
+    total_estoque = produtos.aggregate(Sum('quantidade'))['quantidade__sum']
+
     return render(request, 'dashboard.html', {
         'users': users,
         'produtos': produtos,
         'categorias': categorias,
+        'logs': logs,
+        'total_estoque': total_estoque
         })
+
 
 @login_required
 def get_user_data(request, user_id):
@@ -95,15 +103,19 @@ def save_user(request):
             # Atualizar usuário existente
             user = User.objects.get(pk=user_id)
             form = CustomUserChangeForm(request.POST, instance=user)
+            acao = f'Atualizou o usuário {user.username}'
         else:
             # Criar novo usuário
             form = CustomUserCreationForm(request.POST)
+            acao = 'Criou um novo usuário'
         
         if form.is_valid():
             user = form.save(commit=False)
             if not user_id:
                 user.set_password(form.cleaned_data['password1'])
+                acao = f'Criou o usuário {user.username}'
             user.save()
+            registrar_log(request.user, acao)
             return JsonResponse({'success': True, 'user_id': user.id})
         else:
             return JsonResponse({'success': False, 'errors': form.errors})
@@ -114,7 +126,9 @@ def save_user(request):
 def delete_user(request, user_id):
     try:
         user = get_object_or_404(User, pk=user_id)
+        username = user.username
         user.delete()
+        registrar_log(request.user, f'Deletou o usuário {username}')
         return JsonResponse({'success': True})
     except Exception as e:
         return JsonResponse({'success': False, 'error': str(e)})
@@ -146,17 +160,24 @@ def save_product(request):
             categoria, created = Categoria.objects.get_or_create(nome=new_category_name)
             request.POST = request.POST.copy()
             request.POST['categoria'] = categoria.id
+            acao = f'Criou a categoria {categoria.nome}'
         
         if product_id:
             # Atualizar produto existente
             product = get_object_or_404(Produto, pk=product_id)
             form = ProdutoForm(request.POST, instance=product)
+            acao = f'Atualizou o produto {product.nome}'
         else:
             # Criar novo produto
             form = ProdutoForm(request.POST)
+            acao = 'Criou um novo produto'
         
         if form.is_valid():
-            form.save()
+            product = form.save(commit=False)
+            if not product_id:
+                acao = f'Criou o produto {product.nome}'
+            product.save()
+            registrar_log(request.user, acao)
             return JsonResponse({'success': True})
         else:
             return JsonResponse({'success': False, 'errors': form.errors})
@@ -182,11 +203,57 @@ def get_product_data(request, product_id):
 def delete_product(request, product_id):
     try:
         product = get_object_or_404(Produto, pk=product_id)
+        product_name = product.nome
         product.delete()
+        registrar_log(request.user, f'Deletou o produto {product_name}')
         return JsonResponse({'success': True})
     except Exception as e:
         return JsonResponse({'success': False, 'error': str(e)})
-    
+
+
+@login_required
+def update_quantity(request):
+    if request.method == 'POST':
+        product_id = request.POST.get('product_id')
+        action = request.POST.get('action')
+        quantity = request.POST.get('quantity')
+
+        if not quantity:
+            return JsonResponse({'success': False, 'error': 'Quantidade não fornecida'}, status=400)
+
+        try:
+            quantity = int(quantity)
+        except ValueError:
+            return JsonResponse({'success': False, 'error': 'Quantidade inválida'}, status=400)
+
+        product = get_object_or_404(Produto, pk=product_id)
+
+        if action == 'increase':
+            product.incrementar(quantity)
+            acao = f'Entrada de {quantity} unidades do produto {product.nome}'
+        elif action == 'decrease':
+            product.decrementar(quantity)
+            acao = f'Saída de {quantity} unidades do produto {product.nome}'
+
+        registrar_log(request.user, acao)
+        return JsonResponse({'success': True})
+    return JsonResponse({'success': False, 'error': 'Método não permitido'}, status=405)   
+
+
+@login_required
+def export_products(request):
+    response = HttpResponse(content_type='text/csv')
+    response['Content-Disposition'] = 'attachment; filename="produtos.csv"'
+
+    writer = csv.writer(response)
+    writer.writerow(['Nome', 'Categoria', 'Descrição', 'Quantidade'])
+
+    products = Produto.objects.all().values_list('nome', 'categoria__nome', 'descricao', 'quantidade')
+    for product in products:
+        writer.writerow(product)
+
+    return response
+
 
 def custom_error_view(request, exception=None, status_code=500, message="Erro Interno do Servidor"):
     context = {

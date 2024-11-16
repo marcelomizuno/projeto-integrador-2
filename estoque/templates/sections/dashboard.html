@@ -8,20 +8,20 @@
 
         <div class="card-container">
           <div class="center card-content">
-            <div class="title-content">Entrada</div>
-            <div>30</div>
+            <div class="title-content">Produtos</div>
+            <div>{{ produtos.count }}</div>
           </div>
 
           <div class="center card-content">
-            <div class="title-content">Saída</div>
-            <div>10</div>
+            <div class="title-content">Categorias</div>
+            <div>{{ categorias.count }}</div>
           </div>
         </div>
 
         <div class="card-container">
           <div class="center card-content">
             <div class="title-content">Em estoque</div>
-            <p>20</p>
+            <p>{{ total_estoque }}</p>
           </div>
         </div>
       </div>
@@ -31,14 +31,14 @@
         <div class="card-container">
           <div class="center card-content">
             <div class="title-content">Ativos</div>
-            <div>30</div>
+            <div>{{ users.count }}</div>
           </div>
         </div>
 
         <div class="card-container">
           <div class="center card-content">
             <div class="title-content">Total</div>
-            <p>20</p>
+            <p>{{ users.count }}</p>
           </div>
         </div>
       </div>
@@ -49,16 +49,17 @@
         <h3>Histórico</h3>
 
         <div class="overflow-scroll history">
+          {% for log in logs|slice:":5" %}
           <div class="card-container">
             <div class="card-content">
               <div class="date-tiltle-container">
-                <div class="title-content">Entrada</div>
-                <div class="date">12/11/2024</div>
+                <div class="title-content">{{ log.usuario.first_name }}</div>
+                <div class="date">{{ log.data|date:"d/m/Y H:i" }}</div>
               </div>
-
-              <p>Funcionário X adicionou suco de laranja ao estoque</p>
+              <p>{{ log.acao }}</p>
             </div>
           </div>
+          {% endfor %}
         </div>
       </div>
     </div>
