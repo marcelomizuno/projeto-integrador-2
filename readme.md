@@ -4,12 +4,14 @@ Página do Projeto: https://projeto-integrador-2-ff8p.onrender.com/
 
 Username: admin / Senha: univesp123
 
+Documentação da API: /api/docs/
+
 ## Requerimentos
 
 - ~~Desenvolver um software com framework web que utilize banco de dados~~
 - ~~Inclua script web (Javascript)~~
 - ~~Nuvem~~
-- Uso de API
+- ~~Uso de API~~
 - Acessibilidade 
 - ~~Controle de versão~~
 - ~~Testes~~
